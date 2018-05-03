@@ -1,0 +1,176 @@
+byte i, t[0], clk[3], gl[3] // process,time,clock,grant_left
+mtype = { msg, req, rel, gr } // msgs from processes are request release grant
+chan sr[3] = [8] of { mtype, byte, byte, byte } // send and receive msg
+
+active proctype p1()	// process1
+{
+	byte R1[1], I1[1], St1[3] ;
+	chan Q1 = [4] of { byte } ;
+					//request set,inform set,status set and queue1
+	R1[0] = 1;			// request set
+	I1[0] = 1;			// inform set
+	St1[0] = 1;
+	St1[1] = 2;
+	St2[2] = 3;			// status set
+	clk[0]++ ;
+	t[0] = clk[0];			// t=clk
+	for(i in R1[1])
+		sr[i-1]!req,1,t[0],clk[0]
+					//send(req ,i ,t ,clk)
+	gl[0] = 1;			// grant_left = |R1|
+	
+	do
+	::gl[0]>0||!(i%4==1) -> sr[0]?msg,i,t[i-1],clk[i-1] ;
+	clk[0] = max(clk[0], clk[i-1])
+
+s0:	if
+	::msg == req->goto s1;
+	::msg == rel->goto s2;
+	::msg == gr->goto s3;
+	fi
+
+s1:	Q1!!i ;
+	if
+	::!(t[i-1]>t[0])->sr[i-1]!gr,1,t[0],clk[0];
+		bool rSt = true ;
+		for(j,0,2)
+			if
+			::St[j]==i->rSt=false;
+			fi
+		rof(j);
+		if
+		:: rSt==true->Q1??i
+		fi
+	fi
+
+s2:	Q1??i ;
+
+s3:	gl[0]-- ;
+
+	::else->break
+
+	printf("CS P1\n");
+
+	for(i in I1[1])
+		sr[i-1]!rel,1,t[0],clk[0] ;
+	
+	for(i in Q1)
+		sr[i-1]!gr,1,t[0],clk[0];
+		bool rSt = true ;
+			for(j,0,2)
+				if
+				::St[j]==i->rSt=false;
+				fi
+			rof(j);
+			if
+			:: rSt==true->Q1??i
+			fi
+}
+
+active proctype p2()	// process2
+{
+	byte R2[3], I2[2], St2[1] ;
+	chan Q2 = [4] of { byte } ;
+					//request set,inform set,status set and queue1
+	R2[0] = 1;
+	R2[1] = 2;
+	R2[2] = 3;			// request set
+	I2[0] = 1;
+	I2[1] = 2;			// inform set
+	St2[0] = 2;			// status set
+	clk[1]++ ;
+	t[1] = clk[1];			// t=clk
+	for(i in R2[3])
+		sr[i-1]!req,2,t[1],clk[1]
+					//send(req ,i ,t ,clk)
+	gl[1] = 3;			// grant_left = |R2|
+	
+	do
+	::gl[1]>0||!(i%4==2) -> sr[1]?msg,i,t[i-1],clk[i-1] ;
+	clk[1] = max(clk[1], clk[i-1])
+
+s0:	if
+	::msg == req->goto s1;
+	::msg == rel->goto s2;
+	::msg == gr->goto s3;
+	fi
+
+s1:	Q2!!i ;
+	if
+	::!(t[i-1]>t[1])->sr[i-1]!gr,2,t[1],clk[1];
+		if
+		::i!=2->Q2??i
+		fi
+	fi
+
+s2:	Q2??i ;
+
+s3:	gl[1]-- ;
+
+	::else->break
+
+	printf("CS P2\n");
+
+	for(i in I2[2])
+		sr[i-1]!rel,2,t[1],clk[1] ;
+	
+	for(i in Q2)
+		sr[i-1]!gr,2,t[1],clk[1];
+			if
+			::i!=2->Q2??i
+			fi
+}
+
+active proctype p3()	// process3
+{
+	byte R3[3], I3[2], St3[1];
+	chan Q3 = [4] of { byte };
+					//request set,inform set,status set and queue1
+	R3[0] = 1;
+	R3[1] = 2;
+	R3[2] = 3;			// request set
+	I3[0] = 1;
+	I3[1] = 3;			// inform set
+	St3[0] = 3;			// status set
+	clk[2]++ ;
+	t[2] = clk[2];			// t=clk
+	for(i in R3[3])
+		sr[i-1]!req,3,t[2],clk[2]
+					//send(req ,i ,t ,clk)
+	gl[2] = 3;			// grant_left = |R3|
+	
+	do
+	::gl[2]>0||!(i%4==3) -> sr[2]?msg,i,t[i-1],clk[i-1] ;
+	clk[2] = max(clk[2], clk[i-1])
+
+s0:	if
+	::msg == req->goto s1;
+	::msg == rel->goto s2;
+	::msg == gr->goto s3;
+	fi
+
+s1:	Q3!!i ;
+	if
+	::!(t[i-1]>t[2])->sr[i-1]!gr,3,t[2],clk[2];
+		if
+		::i!=3->Q3??i
+		fi
+	fi
+
+s2:	Q3??i ;
+
+s3:	gl[2]-- ;
+
+	::else->break
+
+	printf("CS P3\n");
+
+	for(i in I3[2])
+		sr[i-1]!rel,3,t[2],clk[2] ;
+	
+	for(i in Q3)
+		sr[i-1]!gr,3,t[2],clk[2];
+			if
+			::i!=3->Q3??i
+			fi
+}

@@ -1,0 +1,53 @@
+$ spin -a simple-draft.pml
+ltl ltl_0: [] ((mutex<2))
+$
+$ gcc pan.c && ./a.out
+warning: never claim + accept labels requires -a flag to fully verify
+
+(Spin Version 6.4.8 -- 2 March 2018)
+	+ Partial Order Reduction
+
+Full statespace search for:
+	never claim         	+ (ltl_0)
+	assertion violations	+ (if within scope of claim)
+	acceptance   cycles 	- (not selected)
+	invalid end states	- (disabled by never claim)
+
+State-vector 234 byte, depth reached 431, errors: 0
+    19064 states, stored
+     7814 states, matched
+    26878 transitions (= stored+matched)
+        0 atomic steps
+hash conflicts:         3 (resolved)
+
+Stats on memory usage (in Megabytes):
+    4.763	equivalent memory usage for states (stored*(State-vector + overhead))
+    4.177	actual memory usage for states (compression: 87.69%)
+         	state-vector as stored = 202 byte + 28 byte overhead
+  128.000	memory used for hash table (-w24)
+    0.611	memory used for DFS stack (-m10000)
+  132.712	total actual memory usage
+
+
+unreached in proctype P1
+	simple-draft.pml:40, state 27, "clk[0] = c"
+	simple-draft.pml:109, state 111, "-end-"
+	(2 of 111 states)
+unreached in proctype P2
+	simple-draft.pml:137, state 27, "clk[1] = c"
+	simple-draft.pml:151, state 43, "q2!head"
+	simple-draft.pml:159, state 51, "tmp!item"
+	simple-draft.pml:159, state 52, "((item!=((u*4)+r)))"
+	simple-draft.pml:165, state 60, "q2!item"
+	simple-draft.pml:193, state 88, "sr[((item%4)-1)]!gr,2,(item/4),clk[1]"
+	simple-draft.pml:195, state 90, "tmp!item"
+	simple-draft.pml:202, state 101, "q2!item"
+	simple-draft.pml:206, state 111, "-end-"
+	(9 of 111 states)
+unreached in claim ltl_0
+	_spin_nvr.tmp:8, state 10, "-end-"
+	(1 of 10 states)
+
+pan: elapsed time 0.03 seconds
+pan: rate 635466.67 states/second
+

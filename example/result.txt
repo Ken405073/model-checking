@@ -1,3 +1,40 @@
+osboxes@osboxes:~/Jinan/model-checking/example$ spin -a very-simple.pml
+ltl ltl_0: [] ((mutex<1))
+osboxes@osboxes:~/Jinan/model-checking/example$ gcc pan.c && ./a.out
+warning: never claim + accept labels requires -a flag to fully verify
+pan:1: assertion violated  !( !((mutex<1))) (at depth 166)
+pan: wrote very-simple.pml.trail
+
+(Spin Version 6.4.8 -- 2 March 2018)
+Warning: Search not completed
+	+ Partial Order Reduction
+
+Full statespace search for:
+	never claim         	+ (ltl_0)
+	assertion violations	+ (if within scope of claim)
+	acceptance   cycles 	- (not selected)
+	invalid end states	- (disabled by never claim)
+
+State-vector 234 byte, depth reached 166, errors: 1
+     1362 states, stored
+      416 states, matched
+     1778 transitions (= stored+matched)
+        0 atomic steps
+hash conflicts:         0 (resolved)
+
+Stats on memory usage (in Megabytes):
+    0.340	equivalent memory usage for states (stored*(State-vector + overhead))
+    0.469	actual memory usage for states
+  128.000	memory used for hash table (-w24)
+    0.611	memory used for DFS stack (-m10000)
+  129.001	total actual memory usage
+
+
+pan: elapsed time 0 seconds
+
+
+==========================
+
 $ spin -a simple-draft.pml
 ltl ltl_0: [] ((mutex<2))
 $
